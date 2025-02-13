@@ -1,0 +1,49 @@
+﻿@page "/fetchdata"
+@inject WeatherForecastService ForecastService
+
+<PageTitle>Weather forecast</PageTitle>
+
+<h1>Weather forecast</h1>
+
+<p>This component demonstrates fetching data from a service.</p>
+
+@if (_forecasts == null)
+{
+    <p>
+        <em>Loading...</em>
+    </p>
+}
+else
+{
+    <MDataTable Headers="_headers" Items="_forecasts" ItemsPerPage="5">
+        <ItemColContent>
+            @if (context.Header.Value == nameof(WeatherForecast.Date))
+            {
+                @context.Item.Date.ToShortDateString()
+            }
+            else
+            {
+                @context.Value
+            }
+        </ItemColContent>
+    </MDataTable>
+}
+
+@code {
+
+    private readonly List<DataTableHeader<WeatherForecast>> _headers = new()
+    {
+        new DataTableHeader<WeatherForecast> { Text = "Date", Value = nameof(WeatherForecast.Date) },
+        new DataTableHeader<WeatherForecast> { Text = "Temp. (C)", Value = nameof(WeatherForecast.TemperatureC) },
+        new DataTableHeader<WeatherForecast> { Text = "Temp. (F)", Value = nameof(WeatherForecast.TemperatureF) },
+        new DataTableHeader<WeatherForecast> { Text = "Summary", Value = nameof(WeatherForecast.Summary), Sortable = false }
+    };
+
+    private WeatherForecast[]? _forecasts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _forecasts = await ForecastService.GetForecastAsync(DateOnly.FromDateTime(DateTime.Now));
+    }
+
+}
