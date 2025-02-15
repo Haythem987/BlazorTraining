@@ -1,0 +1,19 @@
+﻿@using BlazorTraining.Pages
+<MCard Class="rounded-2xl m-4 p-5">
+    <div class="flex flex-col w-400px h-300px">
+        <MImage Class="w-full h-200px" Src="@Params.ImgSrc"></MImage>
+        <div class="w-full grid grid-cols-3 gap-2 m-3">
+            <div class="bg-black bg-op-10 w-100px h-50px rounded-3"></div>
+            <div class="bg-black bg-op-20 w-100px h-50px rounded-3"></div>
+            <div class="bg-black bg-op-30 w-100px h-50px rounded-3"></div>
+        </div>
+        <div class="flex justify-between">
+            <div>@Params.ImgName</div>
+            <div>❤️@Params.ImgLoved</div>
+        </div>
+    </div>
+</MCard>
+
+@code {
+    [Parameter][EditorRequired] public Collections.CollectionItems Params { get; set; }
+}

@@ -4,6 +4,6 @@ import cssnano from "cssnano";
 export default {
     plugins: [
         UnoCSS(),
-        cssnano({ preset: "default" }),
+        cssnano({preset: "default"}),
     ],
 };

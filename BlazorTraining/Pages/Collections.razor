@@ -1,0 +1,64 @@
+﻿@page "/collections"
+@using System.Text.RegularExpressions
+@using BlazorTraining.Components.Collections
+@inject IPopupService PopupService
+
+<div class="flex w-full h-full justify-center items-center">
+    <MImage Class="w-full h-full fixed object-cover" Src="images/69227626_p0.jpg"></MImage>
+    <MCard Class="w-1000px h-700px bg-white bg-op-30 shadow-gray-5 shadow-op-50">
+        <MCardTitle Class="text-white">Popular Collections</MCardTitle>
+        <MCardText Class="text-white h-full">
+            <div class="flex">
+                @foreach (var item in _tag)
+                {
+                    <div
+                        class="p-4 cursor-pointer text-white font-bold hover:bg-op-30 hover:bg-white transition-colors rounded-2xl">@item</div>
+                }
+            </div>
+            <div class="flex flex-wrap justify-center overflow-y-auto h-80%">
+                @foreach (var item in _collectionItems)
+                {
+                    <div @onclick="() => HandleClick(item.ImgName, item.ImgLoved, item.ImgSrc)">
+                        <Card Params="item"></Card>
+                    </div>
+                }
+            </div>
+        </MCardText>
+
+    </MCard>
+</div>
+
+@code {
+
+    private readonly List<string> _tag = ["Profile", "New York", "Relaxing", "Person", "Fashion"];
+
+    public class CollectionItems
+    {
+        public required string ImgName { get; init; }
+        public required int ImgLoved { get; init; }
+        public string? ImgSrc { get; init; }
+    }
+
+    private readonly List<CollectionItems> _collectionItems =
+    [
+        new() { ImgName = "Img1", ImgLoved = 8583, ImgSrc = "images/69227626_p0.jpg" },
+        new() { ImgName = "Img2", ImgLoved = 58845, ImgSrc = "images/69580290_p0.jpg" },
+        new() { ImgName = "Img3", ImgLoved = 13213, ImgSrc = "images/70022444_p0.jpg" },
+        new() { ImgName = "Img4", ImgLoved = 1212, ImgSrc = "images/72723240_p0.jpg" },
+        new() { ImgName = "Img5", ImgLoved = 4221, ImgSrc = "images/126854741_p0.png" },
+        new() { ImgName = "Img6", ImgLoved = 232142, ImgSrc = "images/39930673_p0.jpg" }
+    ];
+
+    private Task HandleClick(string ImgName, int ImgLoved, string? ImgSrc)
+    {
+        return PopupService.EnqueueSnackbarAsync($"图片名称为{ImgName},点赞为 {ImgLoved},链接为{ConvertLocalSrcToPixivSrc(ImgSrc)}", AlertTypes.Success);
+    }
+
+    private string ConvertLocalSrcToPixivSrc(string ImgSrc)
+    {
+        const string Prefix = "https://www.pixiv.net/artworks/";
+        const string ImgSrcRegex =@"images/([0-9]*?)_p0.*"; 
+        var match = Regex.Match(ImgSrc, ImgSrcRegex).Groups[1].Value;
+        return $"{Prefix}{match}";
+    }
+}

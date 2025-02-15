@@ -1,55 +1,74 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
 
+<PageTitle>Blazor练习项目</PageTitle>
 <MApp Id="app">
-    <MAppBar App>
-        <MAppBarNavIcon @onclick="() => _drawer = !_drawer"></MAppBarNavIcon>
-        <MToolbarTitle>BlazorTraining</MToolbarTitle>
-        <MSpacer></MSpacer>
-        <MButton Text Color="primary" Target="_blank"
-                 Href="https://docs.masastack.com/blazor/introduction/why-masa-blazor">About
-        </MButton>
-    </MAppBar>
-
-    <MNavigationDrawer App @bind-Value="_drawer">
-        <MList Nav Routable>
-            <MListItem Href="/" ActiveClass="primary--text">
-                <MListItemIcon>
-                    <MIcon>mdi-home</MIcon>
-                </MListItemIcon>
-                <MListItemContent>
-                    <MListItemTitle>Home</MListItemTitle>
-                </MListItemContent>
-            </MListItem>
-            <MListItem Href="/counter" ActiveClass="primary--text">
-                <MListItemIcon>
-                    <MIcon>mdi-plus</MIcon>
-                </MListItemIcon>
-                <MListItemContent>
-                    <MListItemTitle>Counter</MListItemTitle>
-                </MListItemContent>
-            </MListItem>
-            <MListItem Href="/fetchdata" ActiveClass="primary--text">
-                <MListItemIcon>
-                    <MIcon>mdi-list-box</MIcon>
-                </MListItemIcon>
-                <MListItemContent>
-                    <MListItemTitle>Fetch data</MListItemTitle>
-                </MListItemContent>
-            </MListItem>
+    <MNavigationDrawer App Permanent Floating Class="border-r border-solid border-gray-200 p-4">
+        <div class="text-center font-bold">Blazor练习项目</div>
+        <MList Routable Class="mt-4">
+            @foreach (var item in _routerItems)
+            {
+                <MListItem Href="@item.Path" ActiveClass="primary--text" Class="m-3">
+                    <MIcon>@item.Icon</MIcon>
+                    <MListItemContent>
+                        @item.Name
+                    </MListItemContent>
+                </MListItem>
+            }
         </MList>
     </MNavigationDrawer>
-
-    <MMain>
-        <MContainer Fluid>
-            <MErrorHandler>
-                @Body
-            </MErrorHandler>
-        </MContainer>
-    </MMain>
+    <div class="flex flex-col">
+        <MAppBar App Elevation="0"
+                 Class="bg-white border-b border-solid border-gray-200">
+            <MIcon>@_BarIcon</MIcon>
+            <MAppBarTitle>@_BarTitle</MAppBarTitle>
+        </MAppBar>
+        <MMain>@Body</MMain>
+    </div>
 </MApp>
 
-@code {
+@code{
 
-    private bool? _drawer;
+    private class RouterItem
+    {
+        public string Path { get; init; }
+        public string Name { get; init; }
+        public string Icon { get; init; }
+    }
+
+    private readonly List<RouterItem> _routerItems =
+    [
+        new() { Path = "/", Name = "首页", Icon = "mdi-home" },
+        new() { Path = "/counter", Name = "计数器", Icon = "mdi-plus" },
+        new() { Path = "/collections", Name = "收藏列表", Icon = "mdi-star" }
+    ];
+
+    protected override void OnInitialized()
+    {
+        UpdateBarInfo();
+        NavigationManager.LocationChanged += HandleLocationChanged;
+    }
+
+    private void HandleLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        UpdateBarInfo();
+    }
+
+    private string _BarTitle, _BarIcon;
+
+    private void UpdateBarInfo()
+    {
+        var NowUrl = NavigationManager.Uri[(NavigationManager.BaseUri.Length - 1)..];
+        var NowItem = _routerItems.FirstOrDefault(x => x.Path == NowUrl);
+
+        if (NowItem != null)
+        {
+            _BarTitle = NowItem.Name;
+            _BarIcon = NowItem.Icon;
+        }
+
+        StateHasChanged();
+    }
+
 
 }
