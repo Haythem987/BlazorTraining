@@ -57,8 +57,9 @@
     private string ConvertLocalSrcToPixivSrc(string ImgSrc)
     {
         const string Prefix = "https://www.pixiv.net/artworks/";
-        const string ImgSrcRegex =@"images/([0-9]*?)_p0.*"; 
+        const string ImgSrcRegex = @"images/([0-9]*?)_p0.*";
         var match = Regex.Match(ImgSrc, ImgSrcRegex).Groups[1].Value;
         return $"{Prefix}{match}";
     }
+
 }
