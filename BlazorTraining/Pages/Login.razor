@@ -1,0 +1,146 @@
+﻿@page "/login"
+@using System.ComponentModel.DataAnnotations
+@inject IPopupService PopupService
+
+<div class="flex w-full h-full justify-center items-center">
+    <MImage Class="w-full h-full fixed object-cover" Src="images/70022444_p0.jpg"></MImage>
+
+    <MCard Class="w-500px bg-white">
+        <MCardTitle Class="flex justify-center">
+            <div class="font-bold">登陆系统</div>
+        </MCardTitle>
+        <div class="flex justify-center ml-5 mr-5 p-4">
+            <MCardText>
+                @if (_state == state.login)
+                {
+                    <MForm Model="_user" ValidateOn="ValidateOn.Blur" @ref="_formLogin">
+                        <div class="flex flex-col justify-center border-b border-solid border-b-black">
+                            <MTextField Outlined Label="邮箱" @bind-Value="_user.Email"></MTextField>
+                            <MTextField Outlined Label="密码" @bind-Value="_user.Password"></MTextField>
+                            <MButton Class="mb-7" Type="submit" @onclick="HandleLogin">登录</MButton>
+                        </div>
+                    </MForm>
+                    <div class="flex justify-center mt-5 color-gray">
+                        <span>没有账户?</span>
+                        <span class="ml-2 cursor-pointer text-blue-4" @onclick="ChangeStateToRegister">点我注册</span>
+                    </div>
+                    <div class="text-center color-gray-3 cursor-pointer" @onclick="ExportAllUser">向控制台输出所有已注册用户</div>
+                }
+                else
+                {
+                    <MForm Model="_user" ValidateOn="ValidateOn.Blur" OnValidSubmit="HandleRegister" @ref="_formRegister">
+                        <div class="border-b border-solid border-b-black">
+                            <MTextField Outlined Label="邮箱" @bind-Value="_user.Email"></MTextField>
+                            <MTextField Outlined Label="昵称" @bind-Value="_user.Name"></MTextField>
+                            <MTextField Outlined Label="密码" @bind-Value="_user.Password"></MTextField>
+                            <MButton Class="w-full mb-5" Type="submit">注册</MButton>
+                        </div>
+                    </MForm>
+                    <div class="flex justify-center mt-5 color-gray">
+                        <span class="ml-2 cursor-pointer text-blue-4" @onclick="ChangeStateToLogin">返回登录</span>
+                    </div>
+                    <div class="text-center color-gray-3 cursor-pointer" @onclick="ExportAllUser">向控制台输出所有已注册用户</div>
+                }
+            </MCardText>
+        </div>
+
+
+    </MCard>
+</div>
+
+@code {
+
+    private class User
+    {
+        [Required(ErrorMessage = "邮箱不能为空")]
+        [Display(Name = "邮箱")]
+        public string Email { get; set; }
+
+        [Required(ErrorMessage = "昵称不能为空")]
+        [Display(Name = "昵称")]
+        public string Name { get; set; }
+        [Required(ErrorMessage = "密码不能为空")]
+        [Display(Name = "密码")]
+        public string Password { get; set; }
+    }
+
+    private User _users;
+    
+    private MForm _formLogin, _formRegister;
+
+    
+    
+    private enum state
+    {
+        register,
+        login
+    }
+
+    private state _state = state.login;
+    private User _user;
+
+    protected override void OnInitialized()
+    {
+        _user = new User();
+    }
+
+    private void ChangeStateToRegister()
+    {
+        _state = state.register;
+        _formLogin.Reset();
+    
+    }
+
+    private void ChangeStateToLogin()
+    {
+        _state = state.login;
+      
+        _formRegister.Reset();
+    }
+
+    List<User> UsersList = [];
+
+    private async Task HandleRegister()
+    {
+        if (UsersList.Any(user=>user.Email == _user.Email))
+        {
+            await PopupService.EnqueueSnackbarAsync("该邮箱已被注册", AlertTypes.Error);
+        }
+        else
+        {
+            UsersList.Add(new User
+            {
+                Email = _user.Email,
+                Name = _user.Name,
+                Password = _user.Password
+            });
+            _formRegister.ResetValidation();
+            ChangeStateToLogin();
+            await PopupService.EnqueueSnackbarAsync("注册成功", AlertTypes.Success);
+        }
+    }
+
+    private async Task HandleLogin()
+    {
+       if (UsersList.Any( user => user.Email == _user.Email && user.Password == _user.Password))
+       {
+           await PopupService.EnqueueSnackbarAsync("登陆成功", AlertTypes.Success);
+       }
+
+       if (UsersList.Any(user => user.Email != _user.Email))
+       {
+           await PopupService.EnqueueSnackbarAsync("邮箱不存在", AlertTypes.Error);
+       }
+       
+       else if (UsersList.Any(user => user.Password != _user.Password))
+       {
+           await PopupService.EnqueueSnackbarAsync("密码错误", AlertTypes.Error);
+       }
+    }
+
+    private void ExportAllUser()
+    {
+        foreach(var user in UsersList)
+        Console.WriteLine($"Email: {user.Email}, Name: {user.Name}, Password: {user.Password}");
+    }
+}

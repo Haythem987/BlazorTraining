@@ -114,7 +114,7 @@
 
     protected override void OnInitialized()
     {
-        _formCoffeeData = CreateNewFormCoffeeData();
+        _formCoffeeData = new FormCoffeeData();
     }
 
     private FormCoffeeData CreateNewFormCoffeeData()
@@ -140,6 +140,7 @@
     }
 
     private MForm addDataForm;
+    
 
     private void ResetForm()
     {
@@ -150,12 +151,13 @@
 
     private async Task HandleDeleteData()
     {
-        var SelectedItems=_itemSelected.Select(item => int.Parse(item)).ToList();
-       if (SelectedItems.Count == 0)
+        var SelectedItems = _itemSelected.Select(item => int.Parse(item)).ToList();
+        if (SelectedItems.Count == 0)
         {
             await PopupService.EnqueueSnackbarAsync("请选择要删除的数据", AlertTypes.Error);
             return;
-       }
+        }
+
         _coffeeItems.RemoveAll(item => SelectedItems.Contains(item.Id));
         _itemSelected = [];
         await PopupService.EnqueueSnackbarAsync("删除成功", AlertTypes.Success);

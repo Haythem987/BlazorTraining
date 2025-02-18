@@ -1,6 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
 
+
 <PageTitle>Blazor练习项目</PageTitle>
 <MApp Id="app">
     <MNavigationDrawer App Permanent Floating Class="border-r border-solid border-gray-200 p-4">
@@ -10,7 +11,7 @@
             {
                 <MListItem Href="@item.Path" ActiveClass="primary--text" Class="m-3">
                     <MIcon>@item.Icon</MIcon>
-                    <MListItemContent>
+                    <MListItemContent Class="ml-2">
                         @item.Name
                     </MListItemContent>
                 </MListItem>
@@ -21,7 +22,7 @@
         <MAppBar App Elevation="0"
                  Class="bg-white border-b border-solid border-gray-200">
             <MIcon>@_BarIcon</MIcon>
-            <MAppBarTitle>@_BarTitle</MAppBarTitle>
+            <MAppBarTitle Class="ml-2">@_BarTitle</MAppBarTitle>
         </MAppBar>
         <MMain>@Body</MMain>
     </div>
@@ -41,7 +42,8 @@
         new() { Path = "/", Name = "首页", Icon = "mdi-home" },
         new() { Path = "/Counter", Name = "计数器", Icon = "mdi-plus" },
         new() { Path = "/Collections", Name = "收藏列表", Icon = "mdi-star" },
-        new() { Path = "/coffee", Name = "咖啡管理", Icon = "mdi-coffee" }
+        new() { Path = "/coffee", Name = "咖啡管理", Icon = "mdi-coffee" },
+        new() { Path = "/Login", Name = "登录", Icon = "mdi-login" }
     ];
 
     protected override void OnInitialized()
